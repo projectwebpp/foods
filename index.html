@@ -1,0 +1,974 @@
+
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสั่งอาหาร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .page {
+            display: none;
+            min-height: calc(100vh - 70px);
+            padding-bottom: 70px;
+        }
+        .active {
+            display: block;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        .nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+        .category-btn.active {
+            background-color: #e53e3e;
+            color: white;
+        }
+        .menu-item {
+            transition: transform 0.2s;
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        .notification {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(229, 62, 62, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Page -->
+    <div id="homePage" class="page active bg-gray-100">
+        <div class="bg-red-600 text-white p-4 shadow-md">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">ร้านอาหารอร่อย</h1>
+                <div class="flex items-center">
+                    <div class="mr-4">โต๊ะ <span id="tableNumber" class="font-bold">1</span></div>
+                    <div class="relative">
+                        <button id="cartBtn" class="p-2 bg-white rounded-full text-red-600">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cartBadge" class="cart-badge hidden">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4">
+            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-2">ยินดีต้อนรับ</h2>
+                <p>เลือกเมนูอาหารที่คุณต้องการได้เลย</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-2">โปรโมชั่น</h2>
+                <div class="bg-yellow-100 rounded-lg p-3 border border-yellow-300">
+                    <div class="flex items-center">
+                        <i class="fas fa-gift text-yellow-500 text-2xl mr-3"></i>
+                        <div>
+                            <h3 class="font-medium">ลด 10% เมื่อสั่งครบ 500 บาท</h3>
+                            <p class="text-sm text-gray-600">ถึง 31 ธันวาคม 2566</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-2">เมนูแนะนำ</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="menu-item bg-gray-50 rounded-lg overflow-hidden shadow-sm">
+                        <div class="h-24 bg-red-100 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8c0-4.41,3.59-8,8-8 s8,3.59,8,8C20,16.41,16.41,20,12,20z M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59 L13.41,12L16,9.41L14.59,8z"></path>
+                            </svg>
+                        </div>
+                        <div class="p-2">
+                            <h3 class="font-medium">ข้าวผัดกระเพราหมูสับ</h3>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-red-600 font-semibold">฿79</span>
+                                <button class="add-to-cart bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center" data-id="1" data-name="ข้าวผัดกระเพราหมูสับ" data-price="79">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu-item bg-gray-50 rounded-lg overflow-hidden shadow-sm">
+                        <div class="h-24 bg-orange-100 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8c0-4.41,3.59-8,8-8 s8,3.59,8,8C20,16.41,16.41,20,12,20z M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59 L13.41,12L16,9.41L14.59,8z"></path>
+                            </svg>
+                        </div>
+                        <div class="p-2">
+                            <h3 class="font-medium">ต้มยำกุ้ง</h3>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-red-600 font-semibold">฿120</span>
+                                <button class="add-to-cart bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center" data-id="2" data-name="ต้มยำกุ้ง" data-price="120">
+                                    <i class="fas fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Page -->
+    <div id="menuPage" class="page bg-gray-100">
+        <div class="bg-red-600 text-white p-4 shadow-md">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">เมนูอาหาร</h1>
+                <div class="flex items-center">
+                    <div class="mr-4">โต๊ะ <span class="tableNumber font-bold">1</span></div>
+                    <div class="relative">
+                        <button id="cartBtnMenu" class="p-2 bg-white rounded-full text-red-600">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span id="cartBadgeMenu" class="cart-badge hidden">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4">
+            <div class="flex overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                <button class="category-btn active whitespace-nowrap px-4 py-2 rounded-full mr-2 bg-gray-200" data-category="all">ทั้งหมด</button>
+                <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full mr-2 bg-gray-200" data-category="rice">ข้าว</button>
+                <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full mr-2 bg-gray-200" data-category="noodle">ก๋วยเตี๋ยว</button>
+                <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full mr-2 bg-gray-200" data-category="soup">แกง/ต้มยำ</button>
+                <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full mr-2 bg-gray-200" data-category="drink">เครื่องดื่ม</button>
+                <button class="category-btn whitespace-nowrap px-4 py-2 rounded-full mr-2 bg-gray-200" data-category="dessert">ของหวาน</button>
+            </div>
+            
+            <div id="menuItems" class="grid grid-cols-2 gap-3">
+                <!-- Menu items will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Staff Page -->
+    <div id="callStaffPage" class="page bg-gray-100">
+        <div class="bg-red-600 text-white p-4 shadow-md">
+            <h1 class="text-xl font-bold">เรียกพนักงาน</h1>
+        </div>
+        
+        <div class="p-4">
+            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-4">เลือกบริการที่ต้องการ</h2>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button class="service-btn bg-red-100 p-4 rounded-lg flex flex-col items-center justify-center" data-service="water">
+                        <i class="fas fa-glass-water text-3xl text-red-600 mb-2"></i>
+                        <span>ขอน้ำดื่ม</span>
+                    </button>
+                    <button class="service-btn bg-red-100 p-4 rounded-lg flex flex-col items-center justify-center" data-service="condiment">
+                        <i class="fas fa-pepper-hot text-3xl text-red-600 mb-2"></i>
+                        <span>ขอเครื่องปรุง</span>
+                    </button>
+                    <button class="service-btn bg-red-100 p-4 rounded-lg flex flex-col items-center justify-center" data-service="utensils">
+                        <i class="fas fa-utensils text-3xl text-red-600 mb-2"></i>
+                        <span>ขอช้อนส้อม</span>
+                    </button>
+                    <button class="service-btn bg-red-100 p-4 rounded-lg flex flex-col items-center justify-center" data-service="napkin">
+                        <i class="fas fa-toilet-paper text-3xl text-red-600 mb-2"></i>
+                        <span>ขอกระดาษทิชชู่</span>
+                    </button>
+                    <button class="service-btn bg-red-100 p-4 rounded-lg flex flex-col items-center justify-center" data-service="bill">
+                        <i class="fas fa-receipt text-3xl text-red-600 mb-2"></i>
+                        <span>ขอชำระเงิน</span>
+                    </button>
+                    <button class="service-btn bg-red-100 p-4 rounded-lg flex flex-col items-center justify-center" data-service="other">
+                        <i class="fas fa-bell-concierge text-3xl text-red-600 mb-2"></i>
+                        <span>บริการอื่นๆ</span>
+                    </button>
+                </div>
+                
+                <div id="otherServiceDiv" class="hidden mb-4">
+                    <label for="otherService" class="block text-sm font-medium text-gray-700 mb-1">ระบุบริการที่ต้องการ</label>
+                    <textarea id="otherService" class="w-full border border-gray-300 rounded-md p-2" rows="3" placeholder="กรุณาระบุบริการที่ต้องการ"></textarea>
+                </div>
+                
+                <button id="callStaffBtn" class="w-full bg-red-600 text-white py-3 rounded-lg font-medium">
+                    เรียกพนักงาน
+                </button>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-2">ประวัติการเรียก</h2>
+                <div id="callHistory" class="space-y-3">
+                    <!-- Call history will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Page -->
+    <div id="cartPage" class="page bg-gray-100">
+        <div class="bg-red-600 text-white p-4 shadow-md">
+            <div class="flex items-center">
+                <button id="backFromCart" class="mr-2">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold">รายการสั่งอาหาร</h1>
+            </div>
+        </div>
+        
+        <div class="p-4">
+            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">โต๊ะ <span class="tableNumber">1</span></h2>
+                    <button id="clearCartBtn" class="text-red-600 text-sm">
+                        <i class="fas fa-trash-alt mr-1"></i> ล้างรายการทั้งหมด
+                    </button>
+                </div>
+                
+                <div id="cartItems" class="space-y-3 mb-4">
+                    <!-- Cart items will be dynamically added here -->
+                </div>
+                
+                <div class="border-t border-gray-200 pt-3 mt-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium">รวมทั้งหมด</span>
+                        <span id="totalPrice" class="font-bold text-lg">฿0</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="orderNote" class="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ</label>
+                        <textarea id="orderNote" class="w-full border border-gray-300 rounded-md p-2" rows="2" placeholder="เช่น ไม่ผัก, ไม่เผ็ด"></textarea>
+                    </div>
+                    
+                    <button id="submitOrderBtn" class="w-full bg-red-600 text-white py-3 rounded-lg font-medium">
+                        ยืนยันการสั่งอาหาร
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-lg font-semibold mb-2">ประวัติการสั่งอาหาร</h2>
+                <div id="orderHistory" class="space-y-3">
+                    <!-- Order history will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-40">
+        <button class="nav-item text-red-600" data-page="homePage">
+            <i class="fas fa-home"></i>
+            <span>หน้าแรก</span>
+        </button>
+        <button class="nav-item text-gray-500" data-page="menuPage">
+            <i class="fas fa-utensils"></i>
+            <span>เมนู</span>
+        </button>
+        <button class="nav-item text-gray-500" data-page="callStaffPage">
+            <i class="fas fa-bell"></i>
+            <span>เรียกพนักงาน</span>
+        </button>
+        <button class="nav-item text-gray-500" data-page="cartPage">
+            <i class="fas fa-shopping-cart"></i>
+            <span>ตะกร้า</span>
+        </button>
+    </div>
+
+    <script>
+        // Global variables
+        let cart = [];
+        let orderHistory = [];
+        let callHistory = [];
+        let tableNumber = 1;
+        
+        // Menu data
+        const menuData = [
+            { id: 1, name: "ข้าวผัดกระเพราหมูสับ", price: 79, category: "rice", image: "red" },
+            { id: 2, name: "ต้มยำกุ้ง", price: 120, category: "soup", image: "orange" },
+            { id: 3, name: "ผัดไทยกุ้งสด", price: 90, category: "noodle", image: "yellow" },
+            { id: 4, name: "ข้าวผัดหมู", price: 70, category: "rice", image: "red" },
+            { id: 5, name: "ข้าวหมูกรอบ", price: 85, category: "rice", image: "red" },
+            { id: 6, name: "ส้มตำไทย", price: 60, category: "soup", image: "green" },
+            { id: 7, name: "ก๋วยเตี๋ยวหมูต้มยำ", price: 75, category: "noodle", image: "yellow" },
+            { id: 8, name: "ก๋วยเตี๋ยวเนื้อ", price: 85, category: "noodle", image: "yellow" },
+            { id: 9, name: "แกงเขียวหวานไก่", price: 90, category: "soup", image: "green" },
+            { id: 10, name: "ข้าวผัดปู", price: 100, category: "rice", image: "red" },
+            { id: 11, name: "น้ำเปล่า", price: 15, category: "drink", image: "blue" },
+            { id: 12, name: "น้ำอัดลม", price: 25, category: "drink", image: "blue" },
+            { id: 13, name: "ชาเย็น", price: 35, category: "drink", image: "blue" },
+            { id: 14, name: "กาแฟเย็น", price: 45, category: "drink", image: "blue" },
+            { id: 15, name: "ข้าวเหนียวมะม่วง", price: 60, category: "dessert", image: "purple" },
+            { id: 16, name: "ไอศกรีม", price: 45, category: "dessert", image: "purple" },
+            { id: 17, name: "บัวลอย", price: 40, category: "dessert", image: "purple" },
+            { id: 18, name: "ทับทิมกรอบ", price: 45, category: "dessert", image: "purple" }
+        ];
+
+        // DOM Elements
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        const menuItemsContainer = document.getElementById('menuItems');
+        const cartBadge = document.getElementById('cartBadge');
+        const cartBadgeMenu = document.getElementById('cartBadgeMenu');
+        const cartItemsContainer = document.getElementById('cartItems');
+        const totalPriceElement = document.getElementById('totalPrice');
+        const submitOrderBtn = document.getElementById('submitOrderBtn');
+        const clearCartBtn = document.getElementById('clearCartBtn');
+        const backFromCartBtn = document.getElementById('backFromCart');
+        const cartBtn = document.getElementById('cartBtn');
+        const cartBtnMenu = document.getElementById('cartBtnMenu');
+        const orderHistoryContainer = document.getElementById('orderHistory');
+        const serviceBtns = document.querySelectorAll('.service-btn');
+        const otherServiceDiv = document.getElementById('otherServiceDiv');
+        const callStaffBtn = document.getElementById('callStaffBtn');
+        const callHistoryContainer = document.getElementById('callHistory');
+        const tableNumberElements = document.querySelectorAll('.tableNumber');
+
+        // Initialize the app
+        function initApp() {
+            loadFromLocalStorage();
+            renderMenuItems();
+            updateCartBadge();
+            renderCartItems();
+            renderOrderHistory();
+            renderCallHistory();
+            updateTableNumber();
+        }
+
+        // Navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetPage = item.getAttribute('data-page');
+                if (targetPage) {
+                    showPage(targetPage);
+                    navItems.forEach(navItem => {
+                        navItem.classList.remove('text-red-600');
+                        navItem.classList.add('text-gray-500');
+                    });
+                    item.classList.remove('text-gray-500');
+                    item.classList.add('text-red-600');
+                }
+            });
+        });
+
+        // Show specific page
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Category filter
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(catBtn => {
+                    catBtn.classList.remove('active');
+                });
+                btn.classList.add('active');
+                const category = btn.getAttribute('data-category');
+                renderMenuItems(category === 'all' ? null : category);
+            });
+        });
+
+        // Render menu items
+        function renderMenuItems(category = null) {
+            menuItemsContainer.innerHTML = '';
+            
+            const filteredMenu = category ? menuData.filter(item => item.category === category) : menuData;
+            
+            filteredMenu.forEach(item => {
+                const menuItemElement = document.createElement('div');
+                menuItemElement.className = 'menu-item bg-gray-50 rounded-lg overflow-hidden shadow-sm';
+                menuItemElement.innerHTML = `
+                    <div class="h-24 bg-${item.image}-100 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-${item.image}-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8c0-4.41,3.59-8,8-8 s8,3.59,8,8C20,16.41,16.41,20,12,20z M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59 L13.41,12L16,9.41L14.59,8z"></path>
+                        </svg>
+                    </div>
+                    <div class="p-2">
+                        <h3 class="font-medium">${item.name}</h3>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-red-600 font-semibold">฿${item.price}</span>
+                            <button class="add-to-cart bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">
+                                <i class="fas fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                menuItemsContainer.appendChild(menuItemElement);
+            });
+            
+            // Add event listeners to add-to-cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    const name = btn.getAttribute('data-name');
+                    const price = parseInt(btn.getAttribute('data-price'));
+                    addToCart(id, name, price);
+                });
+            });
+        }
+
+        // Add to cart
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            saveToLocalStorage();
+            updateCartBadge();
+            
+            Swal.fire({
+                title: 'เพิ่มลงตะกร้าแล้ว',
+                text: `${name} (฿${price})`,
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        // Update cart badge
+        function updateCartBadge() {
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            if (totalItems > 0) {
+                cartBadge.textContent = totalItems;
+                cartBadge.classList.remove('hidden');
+                cartBadgeMenu.textContent = totalItems;
+                cartBadgeMenu.classList.remove('hidden');
+            } else {
+                cartBadge.classList.add('hidden');
+                cartBadgeMenu.classList.add('hidden');
+            }
+        }
+
+        // Render cart items
+        function renderCartItems() {
+            cartItemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="text-center py-6 text-gray-500">
+                        <i class="fas fa-shopping-cart text-3xl mb-2"></i>
+                        <p>ไม่มีรายการในตะกร้า</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            cart.forEach(item => {
+                const cartItemElement = document.createElement('div');
+                cartItemElement.className = 'flex justify-between items-center border-b border-gray-200 pb-3';
+                cartItemElement.innerHTML = `
+                    <div>
+                        <h3 class="font-medium">${item.name}</h3>
+                        <p class="text-gray-600">฿${item.price} x ${item.quantity}</p>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="font-semibold mr-3">฿${item.price * item.quantity}</span>
+                        <div class="flex items-center border border-gray-300 rounded-md">
+                            <button class="decrease-quantity px-2 py-1 text-red-600" data-id="${item.id}">-</button>
+                            <span class="px-2">${item.quantity}</span>
+                            <button class="increase-quantity px-2 py-1 text-red-600" data-id="${item.id}">+</button>
+                        </div>
+                    </div>
+                `;
+                
+                cartItemsContainer.appendChild(cartItemElement);
+            });
+            
+            // Add event listeners to quantity buttons
+            document.querySelectorAll('.decrease-quantity').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    decreaseQuantity(id);
+                });
+            });
+            
+            document.querySelectorAll('.increase-quantity').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    increaseQuantity(id);
+                });
+            });
+            
+            // Update total price
+            const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            totalPriceElement.textContent = `฿${totalPrice}`;
+        }
+
+        // Decrease quantity
+        function decreaseQuantity(id) {
+            const itemIndex = cart.findIndex(item => item.id === id);
+            
+            if (itemIndex !== -1) {
+                if (cart[itemIndex].quantity > 1) {
+                    cart[itemIndex].quantity -= 1;
+                } else {
+                    cart.splice(itemIndex, 1);
+                }
+                
+                saveToLocalStorage();
+                updateCartBadge();
+                renderCartItems();
+            }
+        }
+
+        // Increase quantity
+        function increaseQuantity(id) {
+            const itemIndex = cart.findIndex(item => item.id === id);
+            
+            if (itemIndex !== -1) {
+                cart[itemIndex].quantity += 1;
+                saveToLocalStorage();
+                updateCartBadge();
+                renderCartItems();
+            }
+        }
+
+        // Clear cart
+        function clearCart() {
+            Swal.fire({
+                title: 'ยืนยันการลบ',
+                text: 'คุณต้องการลบรายการทั้งหมดใช่หรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่, ลบทั้งหมด',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#e53e3e'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cart = [];
+                    saveToLocalStorage();
+                    updateCartBadge();
+                    renderCartItems();
+                    
+                    Swal.fire({
+                        title: 'ลบรายการแล้ว',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        // Submit order
+        function submitOrder() {
+            if (cart.length === 0) {
+                Swal.fire({
+                    title: 'ไม่มีรายการในตะกร้า',
+                    text: 'กรุณาเลือกรายการอาหารก่อนสั่ง',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'ยืนยันการสั่งอาหาร',
+                text: 'คุณต้องการยืนยันการสั่งอาหารใช่หรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยันการสั่ง',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#e53e3e'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'กำลังส่งรายการ...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Create order object
+                    const order = {
+                        id: Date.now(),
+                        table: tableNumber,
+                        items: [...cart],
+                        totalPrice: cart.reduce((total, item) => total + (item.price * item.quantity), 0),
+                        note: document.getElementById('orderNote').value,
+                        status: 'pending',
+                        time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+                        date: new Date().toLocaleDateString('th-TH')
+                    };
+                    
+                    // Send order to server
+                    sendDataToServer('orders', order)
+                        .then(response => {
+                            // Add to order history
+                            orderHistory.unshift(order);
+                            if (orderHistory.length > 10) orderHistory.pop();
+                            
+                            // Clear cart
+                            cart = [];
+                            document.getElementById('orderNote').value = '';
+                            
+                            // Update UI
+                            saveToLocalStorage();
+                            updateCartBadge();
+                            renderCartItems();
+                            renderOrderHistory();
+                            
+                            // Show success message
+                            Swal.fire({
+                                title: 'สั่งอาหารสำเร็จ',
+                                text: 'รายการของคุณกำลังถูกจัดเตรียม',
+                                icon: 'success'
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error submitting order:', error);
+                            Swal.fire({
+                                title: 'เกิดข้อผิดพลาด',
+                                text: 'ไม่สามารถส่งรายการได้ กรุณาลองใหม่อีกครั้ง',
+                                icon: 'error'
+                            });
+                        });
+                }
+            });
+        }
+
+        // Render order history
+        function renderOrderHistory() {
+            orderHistoryContainer.innerHTML = '';
+            
+            if (orderHistory.length === 0) {
+                orderHistoryContainer.innerHTML = `
+                    <div class="text-center py-6 text-gray-500">
+                        <i class="fas fa-clipboard-list text-3xl mb-2"></i>
+                        <p>ไม่มีประวัติการสั่งอาหาร</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            orderHistory.forEach(order => {
+                const statusClass = order.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                   order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                   'bg-blue-100 text-blue-800';
+                
+                const statusText = order.status === 'completed' ? 'เสร็จสิ้น' : 
+                                  order.status === 'pending' ? 'กำลังเตรียม' : 
+                                  'กำลังเสิร์ฟ';
+                
+                const orderElement = document.createElement('div');
+                orderElement.className = 'bg-gray-50 rounded-lg p-3';
+                orderElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="font-medium">รายการที่ ${order.id.toString().slice(-4)}</span>
+                            <span class="text-sm text-gray-500 ml-2">${order.time}</span>
+                        </div>
+                        <span class="px-2 py-1 rounded-full text-xs ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mb-1">
+                        ${order.items.map(item => `${item.name} x${item.quantity}`).join(', ')}
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">${order.items.reduce((total, item) => total + item.quantity, 0)} รายการ</span>
+                        <span class="font-semibold">฿${order.totalPrice}</span>
+                    </div>
+                `;
+                
+                orderHistoryContainer.appendChild(orderElement);
+            });
+        }
+
+        // Call staff
+        function callStaff(service) {
+            const otherServiceText = service === 'other' ? document.getElementById('otherService').value : '';
+            
+            if (service === 'other' && !otherServiceText) {
+                Swal.fire({
+                    title: 'กรุณาระบุบริการ',
+                    text: 'โปรดระบุบริการที่ต้องการ',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
+            // Show loading
+            Swal.fire({
+                title: 'กำลังเรียกพนักงาน...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Create call object
+            const call = {
+                id: Date.now(),
+                table: tableNumber,
+                service: service,
+                message: service === 'other' ? otherServiceText : getServiceMessage(service),
+                status: 'pending',
+                time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+                date: new Date().toLocaleDateString('th-TH')
+            };
+            
+            // Send call to server
+            sendDataToServer('calls', call)
+                .then(response => {
+                    // Add to call history
+                    callHistory.unshift(call);
+                    if (callHistory.length > 10) callHistory.pop();
+                    
+                    // Clear other service text
+                    if (service === 'other') {
+                        document.getElementById('otherService').value = '';
+                        otherServiceDiv.classList.add('hidden');
+                    }
+                    
+                    // Update UI
+                    saveToLocalStorage();
+                    renderCallHistory();
+                    
+                    // Show success message
+                    Swal.fire({
+                        title: 'เรียกพนักงานสำเร็จ',
+                        text: 'พนักงานจะมาให้บริการในไม่ช้า',
+                        icon: 'success'
+                    });
+                })
+                .catch(error => {
+                    console.error('Error calling staff:', error);
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถเรียกพนักงานได้ กรุณาลองใหม่อีกครั้ง',
+                        icon: 'error'
+                    });
+                });
+        }
+
+        // Get service message
+        function getServiceMessage(service) {
+            switch (service) {
+                case 'water': return 'ขอน้ำดื่ม';
+                case 'condiment': return 'ขอเครื่องปรุง';
+                case 'utensils': return 'ขอช้อนส้อม';
+                case 'napkin': return 'ขอกระดาษทิชชู่';
+                case 'bill': return 'ขอชำระเงิน';
+                default: return '';
+            }
+        }
+
+        // Render call history
+        function renderCallHistory() {
+            callHistoryContainer.innerHTML = '';
+            
+            if (callHistory.length === 0) {
+                callHistoryContainer.innerHTML = `
+                    <div class="text-center py-6 text-gray-500">
+                        <i class="fas fa-bell text-3xl mb-2"></i>
+                        <p>ไม่มีประวัติการเรียกพนักงาน</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            callHistory.forEach(call => {
+                const statusClass = call.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                const statusText = call.status === 'completed' ? 'เสร็จสิ้น' : 'กำลังดำเนินการ';
+                
+                const callElement = document.createElement('div');
+                callElement.className = 'bg-gray-50 rounded-lg p-3';
+                callElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="font-medium">${call.message}</span>
+                            <span class="text-sm text-gray-500 ml-2">${call.time}</span>
+                        </div>
+                        <span class="px-2 py-1 rounded-full text-xs ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+                
+                callHistoryContainer.appendChild(callElement);
+            });
+        }
+
+        // Update table number
+        function updateTableNumber() {
+            // Get table number from URL or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const tableParam = urlParams.get('table');
+            
+            if (tableParam && !isNaN(tableParam)) {
+                tableNumber = parseInt(tableParam);
+            }
+            
+            // Update all table number elements
+            tableNumberElements.forEach(element => {
+                element.textContent = tableNumber;
+            });
+        }
+
+        // Send data to server using JSONP
+        function sendDataToServer(endpoint, data) {
+            return new Promise((resolve, reject) => {
+                // Show loading
+                Swal.fire({
+                    title: 'กำลังบันทึกข้อมูล...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Create a unique callback name
+                const callbackName = 'jsonpCallback_' + Date.now();
+                
+                // Create the script element
+                const script = document.createElement('script');
+                
+                // Define the callback function
+                window[callbackName] = function(response) {
+                    // Clean up
+                    document.body.removeChild(script);
+                    delete window[callbackName];
+                    
+                    // Handle response
+                    if (response && response.success) {
+                        resolve(response);
+                    } else {
+                        reject(response ? response.error : 'Unknown error');
+                    }
+                };
+                
+                // Set the src attribute with the endpoint and data
+                script.src = `https://script.google.com/macros/s/AKfycbwa296XeXsojbQdea7yBSr3XOKwRM_W2zYPk7Cm9SnQfaBChUvzn3UP67EVnJfXHp_i/exec?callback=${callbackName}&action=${endpoint}&data=${encodeURIComponent(JSON.stringify(data))}`;
+                
+                // Handle script load error
+                script.onerror = function() {
+                    // Clean up
+                    document.body.removeChild(script);
+                    delete window[callbackName];
+                    
+                    reject('Network error');
+                };
+                
+                // Append the script to the document
+                document.body.appendChild(script);
+            });
+        }
+
+        // Save data to local storage
+        function saveToLocalStorage() {
+            localStorage.setItem('foodOrderCart', JSON.stringify(cart));
+            localStorage.setItem('foodOrderHistory', JSON.stringify(orderHistory));
+            localStorage.setItem('foodCallHistory', JSON.stringify(callHistory));
+        }
+
+        // Load data from local storage
+        function loadFromLocalStorage() {
+            const savedCart = localStorage.getItem('foodOrderCart');
+            const savedOrderHistory = localStorage.getItem('foodOrderHistory');
+            const savedCallHistory = localStorage.getItem('foodCallHistory');
+            
+            if (savedCart) cart = JSON.parse(savedCart);
+            if (savedOrderHistory) orderHistory = JSON.parse(savedOrderHistory);
+            if (savedCallHistory) callHistory = JSON.parse(savedCallHistory);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+            
+            // Cart buttons
+            cartBtn.addEventListener('click', () => showPage('cartPage'));
+            cartBtnMenu.addEventListener('click', () => showPage('cartPage'));
+            backFromCartBtn.addEventListener('click', () => showPage('homePage'));
+            clearCartBtn.addEventListener('click', clearCart);
+            submitOrderBtn.addEventListener('click', submitOrder);
+            
+            // Service buttons
+            serviceBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const service = btn.getAttribute('data-service');
+                    
+                    serviceBtns.forEach(serviceBtn => {
+                        serviceBtn.classList.remove('bg-red-200');
+                        serviceBtn.classList.add('bg-red-100');
+                    });
+                    
+                    btn.classList.remove('bg-red-100');
+                    btn.classList.add('bg-red-200');
+                    
+                    if (service === 'other') {
+                        otherServiceDiv.classList.remove('hidden');
+                    } else {
+                        otherServiceDiv.classList.add('hidden');
+                    }
+                });
+            });
+            
+            callStaffBtn.addEventListener('click', () => {
+                const activeServiceBtn = document.querySelector('.service-btn.bg-red-200');
+                if (activeServiceBtn) {
+                    const service = activeServiceBtn.getAttribute('data-service');
+                    callStaff(service);
+                } else {
+                    Swal.fire({
+                        title: 'กรุณาเลือกบริการ',
+                        text: 'โปรดเลือกบริการที่ต้องการก่อนเรียกพนักงาน',
+                        icon: 'warning'
+                    });
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'957a507384fe7994',t:'MTc1MTI1MTM4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
